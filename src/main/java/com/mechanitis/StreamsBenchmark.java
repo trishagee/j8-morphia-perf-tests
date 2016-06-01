@@ -31,6 +31,10 @@ public class StreamsBenchmark {
         return values;
     }
 
+    // NOTES: interesting behaviour when you treat the key as definitely a String - seems to make performance worse?
+    // tried IterHelper<String, Object> (seems marginally slower) and tried putting the key straight in (casting to
+    // String), seems slower
+
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
