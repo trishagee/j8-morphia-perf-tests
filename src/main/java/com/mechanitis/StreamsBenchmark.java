@@ -18,35 +18,29 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class StreamsBenchmark {
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Object decodeOriginal(final BenchmarkState state) {
+    public Map<String, Object> decodeOriginal(final BenchmarkState state) {
         final Map<String, Object> values = new HashMap<>();
-        new IterHelper<>().loopMap(state.source, (key, val) -> {
+        IterHelper.<String, Object>loopMap(state.source, (key, val) -> {
             final MappedField mf = state.mappedField;
-            final String objKey = (String)state.mapper.getConverters().decode(String.class, key, mf);
-            values.put(objKey, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+            values.put(key, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
     }
-
-    // NOTES: interesting behaviour when you treat the key as definitely a String - seems to make performance worse?
-    // tried IterHelper<String, Object> (seems marginally slower) and tried putting the key straight in (casting to
-    // String), seems slower
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Object decodeWithStreams(final BenchmarkState state) {
+    public Map<String, Object> decodeWithStreams(final BenchmarkState state) {
         final Map<String, Object> values = new HashMap<>();
         state.source.forEach((key, val) -> {
             final MappedField mf = state.mappedField;
-            final String objKey = (String)state.mapper.getConverters().decode(String.class, key, mf);
-            values.put(objKey, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+            values.put(key, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
     }
 
-    // NOTES: we can get rid of the helper method entirely (but only if we know this is a BasicDBObject)
+    // NOTES: we can get rid of the helper method entirely (but only if we know source is a BasicDBObject)
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {

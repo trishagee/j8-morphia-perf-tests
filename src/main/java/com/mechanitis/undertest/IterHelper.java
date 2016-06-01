@@ -1,7 +1,6 @@
 package com.mechanitis.undertest;
 
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -9,11 +8,9 @@ import java.util.Map.Entry;
 /**
  * Helper to allow for optimizations for different types of Map/Collections
  *
- * @param <K> The key type of the map
- * @param <V> The value type of the map/collection
  * @author Scott Hernandez
  */
-public final class IterHelper<K, V> {
+public final class IterHelper {
     /**
      * Process a Map
      *
@@ -21,22 +18,10 @@ public final class IterHelper<K, V> {
      * @param callback the callback
      */
     @SuppressWarnings("unchecked")
-    public void loopMap(final Object x, final MapIterCallback<K, V> callback) {
-        if (x instanceof HashMap<?, ?>) {
-            if (((HashMap) x).isEmpty()) {
-                return;
-            }
-
-            final HashMap<?, ?> hm = (HashMap<?, ?>) x;
-            for (final Entry<?, ?> e : hm.entrySet()) {
-                callback.eval((K) e.getKey(), (V) e.getValue());
-            }
-        }
-        else if (x instanceof Map) {
-            final Map<K, V> m = (Map<K, V>) x;
-            for (final Entry<K, V> entry : m.entrySet()) {
-                callback.eval(entry.getKey(), entry.getValue());
-            }
+    public static <K, V> void loopMap(final Map x, final MapIterCallback<K, V> callback) {
+        final Map<K, V> m = (Map<K, V>) x;
+        for (final Entry<K, V> entry : m.entrySet()) {
+            callback.eval(entry.getKey(), entry.getValue());
         }
     }
 
