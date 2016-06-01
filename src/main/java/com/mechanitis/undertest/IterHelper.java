@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 
 
 /**
@@ -58,6 +59,35 @@ public final class IterHelper<K, V> {
             }
         }
 
+    }
+
+    /**
+     * Process a Map
+     *
+     * @param x        the object to process
+     * @param callback the callback
+     */
+    @SuppressWarnings("unchecked")
+    public static <K,V> void loopMapStreams(final Object x, final BiConsumer<K, V> callback) {
+        if (x == null) {
+            return;
+        }
+
+        if (x instanceof Collection) {
+            throw new IllegalArgumentException("call loop instead");
+        }
+
+        if (x instanceof HashMap) {
+            final HashMap<K,V> hm = (HashMap<K,V>) x;
+
+            hm.forEach(callback);
+            return;
+        }
+        if (x instanceof Map) {
+            final Map<K,V> m = (Map<K,V>) x;
+
+            m.forEach(callback);
+        }
     }
 
     /**

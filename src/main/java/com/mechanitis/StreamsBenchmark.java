@@ -35,6 +35,18 @@ public class StreamsBenchmark {
     // tried IterHelper<String, Object> (seems marginally slower) and tried putting the key straight in (casting to
     // String), seems slower
 
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public Object decodeWithStreams(final BenchmarkState state) {
+        final Map<String, Object> values = new HashMap<>();
+        IterHelper.loopMapStreams(state.source, (key, val) -> {
+            final MappedField mf = state.mappedField;
+            final String objKey = (String)state.mapper.getConverters().decode(String.class, key, mf);
+            values.put(objKey, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+        });
+
+        return values;
+    }
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
