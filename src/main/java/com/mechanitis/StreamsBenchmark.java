@@ -1,5 +1,6 @@
 package com.mechanitis;
 
+import com.mechanitis.undertest.IterHelper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.annotations.Id;
@@ -13,14 +14,30 @@ import org.openjdk.jmh.annotations.State;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class StreamsBenchmark {
     @Benchmark
-    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    @OutputTimeUnit(MILLISECONDS)
     public Object decodeOriginal(final BenchmarkState state) {
-        return state.mapOfValuesConverter.decode(null, state.source, state.mappedField);
+        return decode(state.source, state.mappedField, state.mapper);
     }
+
+    public Object decode(final Object fromDBObject, final MappedField mf, Mapper mapper) {
+        if (fromDBObject == null) {
+            return null;
+        }
+
+        final Map values = mapper.getOptions().getObjectFactory().createMap(mf);
+        new IterHelper<>().loopMap(fromDBObject, (k, val) -> {
+            final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
+            values.put(objKey, val != null ? mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+        });
+
+        return values;
+    }
+
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
@@ -32,26 +49,17 @@ public class StreamsBenchmark {
 
         public BenchmarkState() {
             mapOfValuesConverter.setMapper(mapper);
-            mappedField = mapper.getMappedClass(new EntityToMap()).getMappedField("result");
+            mappedField = mapper.getMappedClass(new EntityContainingMap()).getMappedField("result");
             for (int i = 0; i < numberOfValues; i++) {
                 source.put(String.valueOf(i), String.valueOf(i));
             }
         }
     }
 
-    private static class EntityToMap {
+    @SuppressWarnings("unused") // fields used by Morphia
+    private static class EntityContainingMap {
         @Id
         private final int id = 0;
         private final Map<String, Object> result = new HashMap<>();
     }
-
-//    public static void main(String[] args) throws RunnerException {
-//        Options opt = new OptionsBuilder()
-//                .include(StreamsBenchmark.class.getSimpleName())
-//                .timeUnit(TimeUnit.MILLISECONDS)
-//                .build();
-//
-//        new Runner(opt).run();
-//
-//    }
 }
