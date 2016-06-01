@@ -21,18 +21,11 @@ public class StreamsBenchmark {
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
     public Object decodeOriginal(final BenchmarkState state) {
-        return decode(state.source, state.mappedField, state.mapper);
-    }
-
-    public Object decode(final Object fromDBObject, final MappedField mf, Mapper mapper) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
-        final Map values = mapper.getOptions().getObjectFactory().createMap(mf);
-        new IterHelper<>().loopMap(fromDBObject, (k, val) -> {
-            final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
-            values.put(objKey, val != null ? mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+        final Map<String, Object> values = new HashMap<>();
+        new IterHelper<>().loopMap(state.source, (key, val) -> {
+            final MappedField mf = state.mappedField;
+            final String objKey = (String)state.mapper.getConverters().decode(String.class, key, mf);
+            values.put(objKey, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
