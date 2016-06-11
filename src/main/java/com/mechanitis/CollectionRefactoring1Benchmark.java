@@ -13,7 +13,7 @@ import java.util.List;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 //TODO: is there a way to run the same test for 10, 100, 1000, 10_000, 100_000 entries?
-public class CollectionRefactoringBenchmark {
+public class CollectionRefactoring1Benchmark {
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
     public List originalIterationCode(final BenchmarkState state) {
@@ -26,7 +26,7 @@ public class CollectionRefactoringBenchmark {
     @OutputTimeUnit(MILLISECONDS)
     public List simplifiedIterationCode(final BenchmarkState state) {
         return state.basicDAO.keysToIdsSimplified(state.keys);
-//130.230 ops/ms
+//85.574 ops/ms
 
     }
 
@@ -34,15 +34,15 @@ public class CollectionRefactoringBenchmark {
     @OutputTimeUnit(MILLISECONDS)
     public List refactoredCode(final BenchmarkState state) {
         return state.basicDAO.keysToIdsRefactored(state.keys);
-//131.653 ops/ms
+// 85.045 ops/ms
 
     }
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-        private int numberOfValues = 1000;
+        private final int numberOfValues = 1000;
         private final BasicDAO basicDAO;
-        private List<Key> keys = new ArrayList<>(numberOfValues);
+        private final List<Key> keys = new ArrayList<>(numberOfValues);
 
         public BenchmarkState() {
             basicDAO = new BasicDAO();
