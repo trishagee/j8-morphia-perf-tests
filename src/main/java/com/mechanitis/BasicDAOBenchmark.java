@@ -3,19 +3,24 @@ package com.mechanitis;
 import com.mechanitis.undertest.BasicDAO;
 import org.mongodb.morphia.Key;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 //TODO: is there a way to run the same test for 10, 100, 1000, 10_000, 100_000 entries?
 @State(Scope.Benchmark)
+@Warmup(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 public class BasicDAOBenchmark {
     @Param({"1", "10", "100", "1000", "10000", "100000"})
     public int numberOfItems;

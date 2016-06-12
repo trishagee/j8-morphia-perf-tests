@@ -6,15 +6,21 @@ import org.mongodb.morphia.DatastoreImpl;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.annotations.Id;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+
+import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of fields in the entity
 @State(Scope.Benchmark)
+@Warmup(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 public class QueryImplBenchmark {
     private final QueryImpl<String> query = new QueryImpl<>();
     private DatastoreImpl datastore;

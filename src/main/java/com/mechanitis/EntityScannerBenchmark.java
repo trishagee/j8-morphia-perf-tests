@@ -4,15 +4,21 @@ import com.google.common.base.Predicate;
 import com.mechanitis.undertest.EntityScanner;
 import org.mongodb.morphia.Morphia;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+
+import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of classes annotated with the Entity annotation
 @State(Scope.Benchmark)
+@Warmup(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 public class EntityScannerBenchmark {
     private final Morphia morphia = new Morphia();
     private EntityScanner entityScanner;
