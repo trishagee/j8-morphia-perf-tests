@@ -13,6 +13,7 @@ import org.mongodb.morphia.mapping.Mapper;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 import java.util.ArrayList;
@@ -20,38 +21,37 @@ import java.util.ArrayList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of Index values in Indexes annotation
-public class CollectionRefactoring4Benchmark {
+@State(Scope.Benchmark)
+public class DatastoreImplBenchmark {
+    private final Mapper mapper = new Mapper();
+    private DatastoreImpl datastore;
+    private MappedClass mappedClass;
+    private DBCollection collection;
+
+    @Setup()
+    public void setup() {
+        MongoClient mongoClient = new MongoClient();
+        collection = mongoClient.getDB("PerformanceTest").getCollection("PerformanceTestCollection");
+        mappedClass = mapper.getMappedClass(new Entity());
+        datastore = new DatastoreImpl(new Morphia(), mapper, mongoClient, "PerformanceTest");
+    }
+
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public void original(final BenchmarkState state) {
+    public void original() {
         //hmm, no return type, are we going to be optimised away?
-        state.datastore.processClassAnnotationsOriginal(state.collection, state.mappedClass, true,
+        datastore.processClassAnnotationsOriginal(collection, mappedClass, true,
                 new ArrayList<>(), new ArrayList<>());
         //0.867 ops/ms
     }
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public void refactored(final BenchmarkState state) {
+    public void refactored() {
         //hmm, no return type, are we going to be optimised away?
-        state.datastore.processClassAnnotationsRefactored(state.collection, state.mappedClass, true,
+        datastore.processClassAnnotationsRefactored(collection, mappedClass, true,
                 new ArrayList<>(), new ArrayList<>());
         //0.855 ops/ms
-    }
-
-    @State(Scope.Benchmark)
-    public static class BenchmarkState {
-        private final DatastoreImpl datastore;
-        private final Mapper mapper = new Mapper();
-        private final MappedClass mappedClass;
-        private final DBCollection collection;
-
-        public BenchmarkState() {
-            MongoClient mongoClient = new MongoClient();
-            collection = mongoClient.getDB("PerformanceTest").getCollection("PerformanceTestCollection");
-            mappedClass = mapper.getMappedClass(new Entity());
-            datastore = new DatastoreImpl(new Morphia(), mapper, mongoClient, "PerformanceTest");
-        }
     }
 
     @SuppressWarnings("unused") // fields used by Morphia

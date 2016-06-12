@@ -20,7 +20,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of values in the DB Object
 @State(Scope.Benchmark)
-public class CollectionRefactoring7Benchmark {
+public class IterHelperBenchmark {
     @Param({"1", "10", "100", "1000", "10000", "100000"})
     public int numberOfItems;
 

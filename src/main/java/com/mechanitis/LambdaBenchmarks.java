@@ -16,7 +16,7 @@ public class LambdaBenchmarks {
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public String[] decodeWithAnonymousInnerClass(final BenchmarkState state) {
-        IterHelper.loopMap(state.values, new IterHelper.MapIterCallback<Integer, String>() {
+        IterHelper.loopMapSimplified(state.values, new IterHelper.MapIterCallback<Integer, String>() {
             @Override
             public void eval(final Integer key, final String value) {
                 state.arrayOfResults[key] = value;
@@ -28,7 +28,7 @@ public class LambdaBenchmarks {
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void decodeWithLambda(final BenchmarkState state) {
-        IterHelper.<Integer, String>loopMap(state.values, (key, value) -> state.arrayOfResults[key] = value) ;
+        IterHelper.<Integer, String>loopMapSimplified(state.values, (key, value) -> state.arrayOfResults[key] = value) ;
     }
 
     @State(Scope.Benchmark)

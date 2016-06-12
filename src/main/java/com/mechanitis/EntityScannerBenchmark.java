@@ -1,0 +1,44 @@
+package com.mechanitis;
+
+import com.google.common.base.Predicate;
+import com.mechanitis.undertest.EntityScanner;
+import org.mongodb.morphia.Morphia;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+// TODO depends on number of classes annotated with the Entity annotation
+@State(Scope.Benchmark)
+public class EntityScannerBenchmark {
+    private final Morphia morphia = new Morphia();
+    private EntityScanner entityScanner;
+
+    @Setup()
+    public void setup() {
+        entityScanner = new EntityScanner(new Predicate<String>() {
+
+            @Override
+            public boolean apply(final String input) {
+                return input.startsWith("com.mechanitis.undertest.entityscanner");
+            }
+        });
+    }
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public void original() {
+        entityScanner.mapAllClassesAnnotatedWithEntityOriginal(morphia);
+        //0.061 ops/ms
+    }
+
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public void refactored() {
+        entityScanner.mapAllClassesAnnotatedWithEntityOriginal(morphia);
+        //0.069 ops/ms
+    }
+
+}

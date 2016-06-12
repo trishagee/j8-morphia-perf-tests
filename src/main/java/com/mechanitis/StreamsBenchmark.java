@@ -20,7 +20,7 @@ public class StreamsBenchmark {
     @OutputTimeUnit(MILLISECONDS)
     public Map<String, Object> decodeOriginal(final BenchmarkState state) {
         final Map<String, Object> values = new HashMap<>();
-        IterHelper.<String, Object>loopMap(state.source, (key, val) -> {
+        IterHelper.<String, Object>loopMapSimplified(state.source, (key, val) -> {
             final MappedField mf = state.mappedField;
             values.put(key, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });

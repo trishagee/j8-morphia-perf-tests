@@ -8,17 +8,15 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.infra.BenchmarkParams;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 //TODO: is there a way to run the same test for 10, 100, 1000, 10_000, 100_000 entries?
 @State(Scope.Benchmark)
-public class CollectionRefactoring1Benchmark {
+public class BasicDAOBenchmark {
     @Param({"1", "10", "100", "1000", "10000", "100000"})
     public int numberOfItems;
 
@@ -26,7 +24,7 @@ public class CollectionRefactoring1Benchmark {
     private final BasicDAO basicDAO = new BasicDAO();
 
     @Setup()
-    public void setup(BenchmarkParams params) {
+    public void setup() {
         for (int i = 0; i < numberOfItems; i++) {
             keys.add(new Key(String.class, "Test Collection", i));
         }

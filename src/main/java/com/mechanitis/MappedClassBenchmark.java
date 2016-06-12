@@ -17,9 +17,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of fields in the entity
 @State(Scope.Benchmark)
-public class CollectionRefactoring8Benchmark {
-    public MappedClass mappedClass;
-    private Mapper mapper = new Mapper();
+public class MappedClassBenchmark {
+    private final Mapper mapper = new Mapper();
+    private MappedClass mappedClass;
 
     @Setup()
     public void setup(BenchmarkParams params) {

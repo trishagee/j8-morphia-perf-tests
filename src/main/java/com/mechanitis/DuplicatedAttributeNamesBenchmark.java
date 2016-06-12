@@ -8,6 +8,7 @@ import org.mongodb.morphia.mapping.validation.ConstraintViolation;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 import java.util.HashSet;
@@ -16,12 +17,23 @@ import java.util.Set;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of fields in the entity and number of "load names" (whcih I think shouldn't be high
-public class CollectionRefactoring2Benchmark {
+@State(Scope.Benchmark)
+public class DuplicatedAttributeNamesBenchmark {
+    private final Mapper mapper = new Mapper();
+    private DuplicatedAttributeNames duplicatedAttributeNames;
+    private MappedClass mappedClass;
+
+    @Setup()
+    public void setup() {
+        duplicatedAttributeNames = new DuplicatedAttributeNames();
+        mappedClass = mapper.getMappedClass(new Entity());
+    }
+
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Set originalIterationCode(final BenchmarkState state) {
+    public Set originalIterationCode() {
         HashSet<ConstraintViolation> violations = new HashSet<>();
-        state.duplicatedAttributeNames.originalIteration(state.mapper, state.mappedClass, violations);
+        duplicatedAttributeNames.originalIteration(mapper, mappedClass, violations);
         return violations;
 
 //12176.275 ops/ms
@@ -31,27 +43,15 @@ public class CollectionRefactoring2Benchmark {
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Set refactoredStreamCode(final BenchmarkState state) {
+    public Set refactoredStreamCode() {
         HashSet<ConstraintViolation> violations = new HashSet<>();
-        state.duplicatedAttributeNames.refactoredIteration(state.mapper, state.mappedClass, violations);
+        duplicatedAttributeNames.refactoredIteration(mapper, mappedClass, violations);
         return violations;
 
 // 5638.329 ops/ms - only ID field
 //        613.994 ops/ms - 10 additional fields
 
 
-    }
-
-    @State(Scope.Benchmark)
-    public static class BenchmarkState {
-        private final DuplicatedAttributeNames duplicatedAttributeNames;
-        private final Mapper mapper = new Mapper();
-        private final MappedClass mappedClass;
-
-        public BenchmarkState() {
-            duplicatedAttributeNames = new DuplicatedAttributeNames();
-            mappedClass = mapper.getMappedClass(new Entity());
-        }
     }
 
     @SuppressWarnings("unused") // fields used by Morphia
