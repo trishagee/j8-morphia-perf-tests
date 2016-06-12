@@ -1,7 +1,6 @@
 package com.mechanitis;
 
 import com.mechanitis.undertest.DuplicatedAttributeNames;
-import com.mongodb.BasicDBObject;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.Mapper;
@@ -45,18 +44,13 @@ public class CollectionRefactoring2Benchmark {
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-        private final int numberOfValues = 1000;
         private final DuplicatedAttributeNames duplicatedAttributeNames;
         private final Mapper mapper = new Mapper();
-        private final BasicDBObject source = new BasicDBObject(numberOfValues);
         private final MappedClass mappedClass;
 
         public BenchmarkState() {
             duplicatedAttributeNames = new DuplicatedAttributeNames();
             mappedClass = mapper.getMappedClass(new Entity());
-            for (int i = 0; i < numberOfValues; i++) {
-                source.put(String.valueOf(i), String.valueOf(i));
-            }
         }
     }
 
