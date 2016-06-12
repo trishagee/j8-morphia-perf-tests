@@ -7,8 +7,11 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.infra.BenchmarkParams;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,14 +19,31 @@ import java.util.Map;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 // TODO depends on number of values in the DB Object
+@State(Scope.Benchmark)
 public class CollectionRefactoring7Benchmark {
+    @Param({"1", "10", "100", "1000", "10000", "100000"})
+    public int numberOfItems;
+
+    public BasicDBObject source;
+    public final Mapper mapper = new Mapper();
+    public MappedField mappedField;
+
+    @Setup()
+    public void setup(BenchmarkParams params) {
+        source = new BasicDBObject(numberOfItems);
+        mappedField = mapper.getMappedClass(new EntityContainingMap()).getMappedField("result");
+        for (int i = 0; i < numberOfItems; i++) {
+            source.put(String.valueOf(i), String.valueOf(i));
+        }
+    }
+
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Map<String, Object> original(final BenchmarkState state) {
+    public Map<String, Object> original() {
         final Map<String, Object> values = new HashMap<>();
-        new IterHelper<String, Object>().loopMap(state.source, (key, val) -> {
-            final MappedField mf = state.mappedField;
-            values.put(key, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+        new IterHelper<String, Object>().loopMap(source, (key, val) -> {
+            final MappedField mf = mappedField;
+            values.put(key, val != null ? mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
@@ -33,11 +53,11 @@ public class CollectionRefactoring7Benchmark {
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Map<String, Object> simplified(final BenchmarkState state) {
+    public Map<String, Object> simplified() {
         final Map<String, Object> values = new HashMap<>();
-        IterHelper.<String, Object>loopMapSimplified(state.source, (key, val) -> {
-            final MappedField mf = state.mappedField;
-            values.put(key, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+        IterHelper.<String, Object>loopMapSimplified(source, (key, val) -> {
+            final MappedField mf = mappedField;
+            values.put(key, val != null ? mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
@@ -46,11 +66,11 @@ public class CollectionRefactoring7Benchmark {
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public Map<String, Object> refactored(final BenchmarkState state) {
+    public Map<String, Object> refactored() {
         final Map<String, Object> values = new HashMap<>();
-        state.source.forEach((key, val) -> {
-            final MappedField mf = state.mappedField;
-            values.put(key, val != null ? state.mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
+        source.forEach((key, val) -> {
+            final MappedField mf = mappedField;
+            values.put(key, val != null ? mapper.getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
@@ -58,21 +78,6 @@ public class CollectionRefactoring7Benchmark {
     }
 
     // NOTES: we can get rid of the helper method entirely (but only if we know source is a BasicDBObject)
-
-    @State(Scope.Benchmark)
-    public static class BenchmarkState {
-        private int numberOfValues = 1000;
-        private final Mapper mapper = new Mapper();
-        private final BasicDBObject source = new BasicDBObject(numberOfValues);
-        private final MappedField mappedField;
-
-        public BenchmarkState() {
-            mappedField = mapper.getMappedClass(new EntityContainingMap()).getMappedField("result");
-            for (int i = 0; i < numberOfValues; i++) {
-                source.put(String.valueOf(i), String.valueOf(i));
-            }
-        }
-    }
 
     @SuppressWarnings("unused") // fields used by Morphia
     private static class EntityContainingMap {
