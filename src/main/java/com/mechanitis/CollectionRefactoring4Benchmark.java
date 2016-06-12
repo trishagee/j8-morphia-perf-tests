@@ -1,8 +1,9 @@
 package com.mechanitis;
 
 import com.mechanitis.undertest.DatastoreImpl;
-import com.mechanitis.undertest.DuplicatedAttributeNames;
-import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.annotations.Field;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Index;
@@ -14,7 +15,7 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -24,26 +25,32 @@ public class CollectionRefactoring4Benchmark {
     @OutputTimeUnit(MILLISECONDS)
     public void original(final BenchmarkState state) {
         //hmm, no return type, are we going to be optimised away?
-        state.datastore.processClassAnnotationsOriginal("Collection", state.mappedClass);
-        //362 065.853
+        state.datastore.processClassAnnotationsOriginal(state.collection, state.mappedClass, true,
+                new ArrayList<>(), new ArrayList<>());
+        //0.867 ops/ms
     }
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
     public void refactored(final BenchmarkState state) {
         //hmm, no return type, are we going to be optimised away?
-        state.datastore.processClassAnnotationsRefactored("Collection", state.mappedClass);
-        //434 488.631
+        state.datastore.processClassAnnotationsRefactored(state.collection, state.mappedClass, true,
+                new ArrayList<>(), new ArrayList<>());
+        //0.855 ops/ms
     }
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-        private final DatastoreImpl datastore = new DatastoreImpl();
+        private final DatastoreImpl datastore;
         private final Mapper mapper = new Mapper();
         private final MappedClass mappedClass;
+        private final DBCollection collection;
 
         public BenchmarkState() {
+            MongoClient mongoClient = new MongoClient();
+            collection = mongoClient.getDB("PerformanceTest").getCollection("PerformanceTestCollection");
             mappedClass = mapper.getMappedClass(new Entity());
+            datastore = new DatastoreImpl(new Morphia(), mapper, mongoClient, "PerformanceTest");
         }
     }
 
