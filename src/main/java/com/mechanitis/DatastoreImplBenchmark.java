@@ -47,7 +47,8 @@ public class DatastoreImplBenchmark {
         //hmm, no return type, are we going to be optimised away?
         datastore.processClassAnnotationsOriginal(collection, mappedClass, true,
                 new ArrayList<>(), new ArrayList<>());
-        //0.867 ops/ms
+        // 0.867 ops/ms (10 indexes)
+        // 1.305 ops/ms (5 indexes)
     }
 
     @Benchmark
@@ -56,7 +57,8 @@ public class DatastoreImplBenchmark {
         //hmm, no return type, are we going to be optimised away?
         datastore.processClassAnnotationsRefactored(collection, mappedClass, true,
                 new ArrayList<>(), new ArrayList<>());
-        //0.855 ops/ms
+        // 0.855 ops/ms (10)
+        // 1.278 ops/ms (5)
     }
 
     @SuppressWarnings("unused") // fields used by Morphia
@@ -64,12 +66,7 @@ public class DatastoreImplBenchmark {
             @Index(fields = @Field("field2")),
             @Index(fields = @Field("field3")),
             @Index(fields = @Field("field4")),
-            @Index(fields = @Field("field5")),
-            @Index(fields = @Field("field6")),
-            @Index(fields = @Field("field7")),
-            @Index(fields = @Field("field8")),
-            @Index(fields = @Field("field9")),
-            @Index(fields = @Field("field10"))
+            @Index(fields = @Field("field5"))
     })
     private static class Entity {
         @Id

@@ -41,8 +41,9 @@ public class DuplicatedAttributeNamesBenchmark {
         duplicatedAttributeNames.originalIteration(mapper, mappedClass, violations);
         return violations;
 
-//12176.275 ops/ms
+        //12176.275 ops/ms - only ID field
         //1546.271 ops/ms - 10 additional fields
+        //574.819 ops/ms - 20
 
     }
 
@@ -53,8 +54,9 @@ public class DuplicatedAttributeNamesBenchmark {
         duplicatedAttributeNames.refactoredIteration(mapper, mappedClass, violations);
         return violations;
 
-// 5638.329 ops/ms - only ID field
-//        613.994 ops/ms - 10 additional fields
+        // 5638.329 ops/ms - only ID field
+        // 613.994 ops/ms - 10 additional fields
+        // 253.697 ops/ms - 20
 
 
     }
@@ -73,6 +75,16 @@ public class DuplicatedAttributeNamesBenchmark {
         private String field8;
         private String field9;
         private String field10;
+        private String field11;
+        private String field12;
+        private String field13;
+        private String field14;
+        private String field15;
+        private String field16;
+        private String field17;
+        private String field18;
+        private String field19;
+        private String field110;
 
     }
 

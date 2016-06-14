@@ -43,7 +43,7 @@ public class EntityScannerBenchmark {
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
     public void refactored() {
-        entityScanner.mapAllClassesAnnotatedWithEntityOriginal(morphia);
+        entityScanner.mapAllClassesAnnotatedWithEntityRefactored(morphia);
         //0.069 ops/ms
     }
 

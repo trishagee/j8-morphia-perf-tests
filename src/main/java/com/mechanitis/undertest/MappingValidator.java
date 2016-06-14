@@ -98,11 +98,11 @@ public class MappingValidator {
 
             // sort by class to make it more readable
             ve.stream()
-                                      .map(LogLine::new)
-                                      .sorted()
-                                      .forEach(logLine -> {
+              .map(LogLine::new)
+              .sorted()
+              .forEach(logLine -> {
                                           logLine.log(LOG);
-                                      });
+              });
         }
     }
 
