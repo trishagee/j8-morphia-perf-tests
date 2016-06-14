@@ -7,6 +7,7 @@ import org.mongodb.morphia.mapping.Mapper;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -23,12 +24,16 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 @Warmup(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 @Measurement(iterations = 10, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 public class MappingValidatorBenchmark {
+    @Param({"EntityWithOneError", "EntityWith10Errors", "EntityWith20Errors"})
+    public String className;
+
     private final Mapper mapper = new Mapper();
     private MappedClass mappedClass;
 
     @Setup()
-    public void setup() {
-        mappedClass = mapper.getMappedClass(new EntityWithOneError());
+    public void setup() throws ClassNotFoundException {
+        final Class<?> entity = Class.forName(MappingValidatorBenchmark.class.getName() + "$" + className);
+        mappedClass = mapper.getMappedClass(entity);
     }
 
     @Benchmark
@@ -54,7 +59,7 @@ public class MappingValidatorBenchmark {
     }
 
     @SuppressWarnings("unused") // fields used by Morphia
-    private static class EntityWithOneError {
+    public static class EntityWithOneError {
         @Id
         private final int id = 0;
 
@@ -63,7 +68,7 @@ public class MappingValidatorBenchmark {
     }
 
     @SuppressWarnings("unused") // fields used by Morphia
-    private static class EntityWith10Errors {
+    public static class EntityWith10Errors {
         @Id
         private final int id = 0;
 
@@ -81,7 +86,7 @@ public class MappingValidatorBenchmark {
     }
 
     @SuppressWarnings("unused") // fields used by Morphia
-    private static class EntityWith20Errors {
+    public static class EntityWith20Errors {
         @Id
         private final int id = 0;
 

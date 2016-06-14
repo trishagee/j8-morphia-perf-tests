@@ -33,11 +33,13 @@ public class EntityScannerBenchmark {
             }
         });
     }
+
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
     public void original() {
         entityScanner.mapAllClassesAnnotatedWithEntityOriginal(morphia);
         //0.061 ops/ms
+        //0.036 ops/ms (busy system)
     }
 
     @Benchmark
@@ -45,6 +47,7 @@ public class EntityScannerBenchmark {
     public void refactored() {
         entityScanner.mapAllClassesAnnotatedWithEntityRefactored(morphia);
         //0.069 ops/ms
+        //0.042 ops/ms (busy)
     }
 
 }
