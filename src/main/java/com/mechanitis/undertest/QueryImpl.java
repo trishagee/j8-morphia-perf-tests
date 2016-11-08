@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class QueryImpl<T> {
-    private boolean includeFields;
 
     public String[] retrieveKnownFieldsOriginal(org.mongodb.morphia.DatastoreImpl ds, Class clazz) {
         final MappedClass mc = ds.getMapper().getMappedClass(clazz);
@@ -35,6 +34,14 @@ public class QueryImpl<T> {
                  .map(MappedField::getNameToStore)
                  .collect(Collectors.toList())
                  .toArray(new String[0]);
+    }
+
+    public String[] retrieveKnownFieldsRefactoredMore(org.mongodb.morphia.DatastoreImpl ds, Class clazz) {
+        final MappedClass mc = ds.getMapper().getMappedClass(clazz);
+        return mc.getPersistenceFields()
+                 .stream()
+                 .map(MappedField::getNameToStore)
+                 .toArray(String[]::new);
     }
 
 }

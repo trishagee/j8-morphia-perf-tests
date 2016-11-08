@@ -100,9 +100,7 @@ public class MappingValidator {
             ve.stream()
               .map(LogLine::new)
               .sorted()
-              .forEach(logLine -> {
-                                          logLine.log(LOG);
-              });
+              .forEach(logLine -> logLine.log(LOG));
         }
     }
 

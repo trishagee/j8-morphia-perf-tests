@@ -1,13 +1,12 @@
 package com.mechanitis;
 
-import com.mechanitis.undertest.Mapper;
 import com.mechanitis.undertest.MapreduceType;
-import org.mongodb.morphia.annotations.Reference;
-import org.mongodb.morphia.mapping.MappedClass;
-import org.mongodb.morphia.mapping.MappedField;
-import org.openjdk.jmh.annotations.*;
-
-import java.lang.annotation.Annotation;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 

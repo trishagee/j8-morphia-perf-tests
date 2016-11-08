@@ -51,6 +51,13 @@ public class QueryImplBenchmark {
         //2392.828 ops/ms
     }
 
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public String[] refactoredMore() {
+        return query.retrieveKnownFieldsRefactoredMore(datastore, Entity.class);
+        //2743 ops/ms
+    }
+
     @SuppressWarnings("unused") // fields used by Morphia
     private static class Entity {
         @Id
