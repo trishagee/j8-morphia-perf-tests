@@ -29,4 +29,8 @@ public class BasicDAO<T> {
         return keys.stream().map(Key::getId).collect(toList());
     }
 
+    public List<?> keysToIdsParallel(final List<Key<T>> keys) {
+        return keys.parallelStream().map(Key::getId).collect(toList());
+    }
+
 }

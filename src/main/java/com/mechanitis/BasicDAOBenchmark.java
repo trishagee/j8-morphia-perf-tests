@@ -57,4 +57,12 @@ public class BasicDAOBenchmark {
 // 85.045 ops/ms
 
     }
+
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public List parallelCode() {
+        return basicDAO.keysToIdsParallel(keys);
+//
+
+    }
 }
