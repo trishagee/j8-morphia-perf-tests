@@ -10,6 +10,7 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mongodb.morphia.query.QueryImpl.parseFieldsString;
@@ -74,11 +75,40 @@ public class DatastoreImpl extends org.mongodb.morphia.DatastoreImpl {
                                ensureIndex(mc, dbColl, index.fields(), index.options(), background, parentMCs, parentMFs);
                            } else {
                                final BasicDBObject fields = parseFieldsString(index.value(), mc.getClazz(), mapper,
-                                       !index.disableValidation(), parentMCs, parentMFs);
+                                                                              !index.disableValidation(), parentMCs,
+                                                                              parentMFs);
                                ensureIndex(dbColl, index.name(), fields, index.unique(), index.dropDups(),
-                                       index.background() ? index.background()
-                                                          : background, index.sparse(), index.expireAfterSeconds());
+                                           index.background() ? index.background()
+                                                   : background, index.sparse(), index.expireAfterSeconds());
                            }
+                       }
+                   });
+        }
+    }
+
+
+    @SuppressWarnings("deprecation")
+    //Only used for ensureIndex
+    public void processClassAnnotationsRefactoredMore(final DBCollection dbColl, final MappedClass mc, final boolean
+            background,
+                                                      final List<MappedClass> parentMCs, final List<MappedField>
+                                                                  parentMFs) {
+        // Ensure indexes from class annotation
+        final List<Indexes> indexes = mc.getAnnotations(Indexes.class);
+        if (indexes != null) {
+            indexes.stream()
+                   .filter(idx -> idx.value().length > 0)
+                   .flatMap(idx -> Arrays.stream(idx.value()))
+                   .forEach(index -> {
+                       if (index.fields().length != 0) {
+                           ensureIndex(mc, dbColl, index.fields(), index.options(), background, parentMCs, parentMFs);
+                       } else {
+                           final BasicDBObject fields = parseFieldsString(index.value(), mc.getClazz(), mapper,
+                                                                          !index.disableValidation(), parentMCs,
+                                                                          parentMFs);
+                           ensureIndex(dbColl, index.name(), fields, index.unique(), index.dropDups(),
+                                       index.background() ? index.background() : background, index.sparse(), index
+                                               .expireAfterSeconds());
                        }
                    });
         }

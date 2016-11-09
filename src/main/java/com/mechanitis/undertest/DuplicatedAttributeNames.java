@@ -40,4 +40,18 @@ public class DuplicatedAttributeNames {
         }
     }
 
+    public void refactoredIterationMore(final Mapper mapper, final MappedClass mc, final Set<ConstraintViolation> ve) {
+        final Set<String> foundNames = new HashSet<String>();
+        for (final MappedField mappedField : mc.getPersistenceFields()) {
+            mappedField.getLoadNames()
+                       .stream()
+                       .filter(name -> !foundNames.add(name))
+                       .map(name -> new ConstraintViolation(ConstraintViolation.Level.FATAL, mc, mappedField, ClassConstraint.class,
+                                                            "Mapping to MongoDB field name '" + name
+                                                            + "' is duplicated; you cannot map different java fields to" +
+                                                            " the same MongoDB field."))
+                       .forEach(ve::add);
+        }
+    }
+
 }
