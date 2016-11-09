@@ -64,4 +64,27 @@ public class EntityScanner {
         new Reflections(conf).getTypesAnnotatedWith(Entity.class).forEach(m::map);
     }
 
+    public Set<URL> identifyURLsOriginal() {
+        final Set<URL> s = new HashSet<URL>();
+        s.addAll(ClasspathHelper.forClassLoader());
+        s.addAll(ClasspathHelper.forJavaClassPath());
+        final Iterator<URL> iterator = s.iterator();
+        while (iterator.hasNext()) {
+            final URL url = iterator.next();
+            if (url.getPath().endsWith("jnilib")) {
+                iterator.remove();
+            }
+        }
+        return s;
+    }
+
+    public Set<URL> identifyURLsRefactored() {
+        final Set<URL> s = new HashSet<URL>();
+        s.addAll(ClasspathHelper.forClassLoader());
+        s.addAll(ClasspathHelper.forJavaClassPath());
+        s.removeIf(url -> url.getPath()
+                             .endsWith("jnilib"));
+        return s;
+    }
+
 }

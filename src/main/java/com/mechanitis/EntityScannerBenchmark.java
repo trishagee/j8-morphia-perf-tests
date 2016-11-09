@@ -50,4 +50,18 @@ public class EntityScannerBenchmark {
         //0.042 ops/ms (busy)
     }
 
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public void removingOriginal() {
+        entityScanner.identifyURLsOriginal();
+        //
+    }
+
+    @Benchmark
+    @OutputTimeUnit(MILLISECONDS)
+    public void removingRefactored() {
+        entityScanner.identifyURLsRefactored();
+        //
+    }
+
 }
