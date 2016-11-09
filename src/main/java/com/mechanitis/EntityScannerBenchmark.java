@@ -11,6 +11,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import java.net.URL;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -52,15 +54,15 @@ public class EntityScannerBenchmark {
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public void removingOriginal() {
-        entityScanner.identifyURLsOriginal();
+    public Set<URL> removingOriginal() {
+        return entityScanner.identifyURLsOriginal();
         //
     }
 
     @Benchmark
     @OutputTimeUnit(MILLISECONDS)
-    public void removingRefactored() {
-        entityScanner.identifyURLsRefactored();
+    public Set<URL> removingRefactored() {
+        return entityScanner.identifyURLsRefactored();
         //
     }
 
